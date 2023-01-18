@@ -1,0 +1,21 @@
+import com.kurrency.data.local.database.entity.ExchangeRateEntity;
+
+CREATE TABLE ExchangeRate(
+    baseCurrency TEXT NOT NULL
+);
+
+CREATE TABLE CurrencyRate(
+    baseCurrency TEXT NOT NULL,
+    currency TEXT NOT NULL,
+    value REAL
+);
+
+getCurrencyRate:
+SELECT * FROM ExchangeRate
+JOIN CurrencyRate ON CurrencyRate.baseCurrency = ExchangeRate.baseCurrency;
+
+insertOrReplace:
+INSERT
+OR
+REPLACE INTO ExchangeRate(baseCurrency)
+VALUES ?;
