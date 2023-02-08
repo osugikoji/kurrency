@@ -28,7 +28,7 @@ internal struct SplashView: View {
 	}
 }
 
-internal struct ContentView_Previews: PreviewProvider {
+internal struct SplashView_Previews: PreviewProvider {
 	static var previews: some View {
 		SplashView()
 	}

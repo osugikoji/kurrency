@@ -1,9 +1,12 @@
 plugins {
     id("com.android.library")
     id("com.squareup.sqldelight") version "1.5.4"
+    id("com.chromaticnoise.multiplatform-swiftpackage") version "2.0.3"
     kotlin("multiplatform")
     kotlin("plugin.serialization") version "1.7.20"
 }
+
+version = "0.0.1"
 
 kotlin {
     android()
@@ -15,6 +18,14 @@ kotlin {
     ).forEach {
         it.binaries.framework {
             baseName = "shared"
+        }
+    }
+
+    multiplatformSwiftPackage {
+        packageName("Kurrency")
+        swiftToolsVersion("5.3")
+        targetPlatforms {
+            iOS { v("13") }
         }
     }
 
