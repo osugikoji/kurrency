@@ -6,7 +6,7 @@ plugins {
     kotlin("plugin.serialization") version "1.7.20"
 }
 
-version = "0.0.1"
+version = "0.0.2"
 
 kotlin {
     android()
