@@ -15,7 +15,7 @@ object KurrencySetup {
 
     fun getKoinApp(): KoinApplication {
         return koinApp
-            ?: error("KoinApplication not initialized. Call start method from KurrencySetup.Builder.")
+            ?: error("KoinApplication not initialized. Call start method from KurrencySetup.Builder")
     }
 
     class Builder {
