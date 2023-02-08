@@ -10,7 +10,8 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build:
+  create-package:
+    name: Create Package
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
@@ -21,42 +22,56 @@ jobs:
       - name: Build iOS framework
         id: buildPackage
         run: ./gradlew :shared:createSwiftPackage
-      - name: Upload Swift Package directory
-        uses: actions/upload-artifact@v2
-        with:
-          name: swiftpackage
-          path: shared/swiftpackage
-          retention-days: 1
+#      - name: Upload Swift Package directory
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: swiftpackage
+#          path: shared/swiftpackage
+#          retention-days: 1
 
-  push:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Download directory with swift package
-        uses: actions/download-artifact@v2
-        with:
-          name: swiftpackage
-          path: swiftpackage
-      - name: Display structure of downloaded files
-        run: ls -R
-      - name: Access tag name of current workflow
-        run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
-      - name: Create release branch on package repo
-        uses: GuillaumeFalourd/create-other-repo-branch-action@v1
-        with:
-          repository_owner: osugikoji
-          repository_name: kurrency-ios-package
-          new_branch_name: ${{ env.TAG }}
-          access_token: ${{ secrets.API_TOKEN_GITHUB}}
-      - name: Push directory to another repository
-        uses: cpina/github-action-push-to-another-repository@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-        with:
-          source-directory: 'swiftpackage'
-          destination-github-username: 'osugikoji'
-          destination-repository-name: 'kurrency-ios-package'
-          user-email: koji097@gmail.com
-          target-branch: ${{ env.TAG }}
+push-changes:
+  name: Push Changes
+  needs: create-package
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v2
+    - name: Commit and push package
+      run: |
+        git config --global user.name 'Koji Osugi'
+        git config --global user.email 'koji097@gmail.com'
+        git add Package.swift Kurrency-*.zip Kurrency.xcframework
+        git commit -am "iOS Package"
+        git push
+
+#  push:
+#    needs: build
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#      - name: Download directory with swift package
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: swiftpackage
+#          path: swiftpackage
+#      - name: Display structure of downloaded files
+#        run: ls -R
+#      - name: Access tag name of current workflow
+#        run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+#      - name: Create release branch on package repo
+#        uses: GuillaumeFalourd/create-other-repo-branch-action@v1
+#        with:
+#          repository_owner: osugikoji
+#          repository_name: kurrency-ios-package
+#          new_branch_name: ${{ env.TAG }}
+#          access_token: ${{ secrets.API_TOKEN_GITHUB}}
+#      - name: Push directory to another repository
+#        uses: cpina/github-action-push-to-another-repository@main
+#        env:
+#          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+#        with:
+#          source-directory: 'swiftpackage'
+#          destination-github-username: 'osugikoji'
+#          destination-repository-name: 'kurrency-ios-package'
+#          user-email: koji097@gmail.com
+#          target-branch: ${{ env.TAG }}

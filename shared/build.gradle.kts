@@ -24,6 +24,7 @@ kotlin {
     multiplatformSwiftPackage {
         packageName("Kurrency")
         swiftToolsVersion("5.3")
+        outputDirectory(File(rootDir, "/"))
         targetPlatforms {
             iOS { v("13") }
         }
