@@ -29,19 +29,19 @@ jobs:
 #          path: shared/swiftpackage
 #          retention-days: 1
 
-push-changes:
-  name: Push Changes
-  needs: create-package
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v2
-    - name: Commit and push package
-      run: |
-        git config --global user.name 'Koji Osugi'
-        git config --global user.email 'koji097@gmail.com'
-        git add Package.swift Kurrency-*.zip Kurrency.xcframework
-        git commit -am "iOS Package"
-        git push
+  push-changes:
+    name: Push Changes
+    needs: create-package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Commit and push package
+        run: |
+          git config --global user.name 'Koji Osugi'
+          git config --global user.email 'koji097@gmail.com'
+          git add Package.swift Kurrency-*.zip Kurrency.xcframework
+          git commit -am "iOS Package"
+          git push
 
 #  push:
 #    needs: build
