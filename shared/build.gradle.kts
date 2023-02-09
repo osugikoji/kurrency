@@ -125,5 +125,4 @@ tasks.register("verifyLibraryVersion") {
         }
         println("$iosPackage package has the updated version")
     }
-    finalizedBy("createSwiftPackage")
 }
