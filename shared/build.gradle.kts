@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     id("com.android.library")
     id("com.squareup.sqldelight") version "1.5.4"
@@ -98,4 +100,15 @@ sqldelight {
     database("AppDatabase") {
         packageName = "com.kurrency.data.local.database"
     }
+}
+
+task("installGitHook", type = Copy::class) {
+    var suffix = "macos"
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        suffix = "windows"
+    }
+    from(file("scripts/pre-commit-$suffix"))
+    into(file(".git/hooks"))
+    rename("pre-commit-$suffix", "pre-commit")
+    fileMode = 775
 }
