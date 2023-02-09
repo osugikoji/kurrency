@@ -4,6 +4,7 @@ echo “- Build KMM Swift Package -”
 ./gradlew shared:createSwiftPackage
 git add Kurrency-*.zip Package.swift Kurrency.xcframework
 git commit -m "Generate swift package"
+git push --no-verify
 if [ $? -ne 0 ]; then
  echo “Swift Package building failed.”
  exit 1
