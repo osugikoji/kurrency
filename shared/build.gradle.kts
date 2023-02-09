@@ -107,7 +107,7 @@ task("installGitHook", type = Copy::class) {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         suffix = "windows"
     }
-    from(file("scripts/pre-commit-$suffix"))
+    from(file(rootProject.rootDir.path + "/scripts/pre-commit-$suffix"))
     into(file(".git/hooks"))
     rename("pre-commit-$suffix", "pre-commit")
     fileMode = 775
