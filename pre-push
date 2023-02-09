@@ -5,8 +5,9 @@ echo “- Build KMM Swift Package -”
 if [ $? -ne 0 ]; then
  echo “Build KMM Swift Package.”
  ./gradlew shared:createSwiftPackage
+ branch_name="$(git rev-parse --abbrev-ref HEAD)"
  git add Kurrency-*.zip Package.swift Kurrency.xcframework
  git commit -m "Generate swift package"
- git push --no-verify
+ git push origin "$branch_name" --no-verify
  exit 1
 fi
