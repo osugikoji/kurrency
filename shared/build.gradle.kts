@@ -115,3 +115,15 @@ task("installGitHook", type = Copy::class) {
 //    rename("pre-commit-$suffix", "pre-commit")
 //    fileMode = 775
 }
+
+tasks.register("verifyLibraryVersion") {
+    doLast {
+        val libraryVersion = properties["library.version"]
+        val iosPackage = "Kurrency-$libraryVersion.zip"
+        if (File(rootProject.rootDir, iosPackage).isFile.not()) {
+            throw IllegalStateException("$iosPackage not found. Please, generate new swift package.")
+        }
+        println("$iosPackage package has the updated version")
+    }
+    finalizedBy("createSwiftPackage")
+}
