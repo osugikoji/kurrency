@@ -13,6 +13,7 @@ if [ $? -ne 0 ]; then
  branch_name="$(git rev-parse --abbrev-ref HEAD)"
  git add Kurrency-*.zip Package.swift Kurrency.xcframework
  git commit -m "Update swift package"
+ git fetch
  git push origin "$branch_name"
  exit 1
 fi
