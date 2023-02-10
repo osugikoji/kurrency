@@ -1,6 +1,3 @@
-import com.android.build.gradle.internal.tasks.factory.dependsOn
-import org.apache.tools.ant.taskdefs.condition.Os
-
 plugins {
     id("com.android.library")
     id("com.squareup.sqldelight") version "1.5.4"
@@ -109,18 +106,23 @@ task("installGitHook", type = Copy::class) {
     fileMode = 775
 }
 
-tasks.register("verifySwiftPackageVersion") {
+tasks.register("checkSwiftPackageVersion") {
+    group = "Verification"
+    description = "Checks if the Swift package has the updated version by comparing it with the current library version."
     doLast {
         val libraryVersion = properties["library.version"]
         val iosPackage = "Kurrency-$libraryVersion.zip"
-        if (File(rootProject.rootDir, iosPackage).isFile.not()) {
-            throw IllegalStateException("$iosPackage not found. Please, update swift package.")
+        val filePath = File(rootProject.rootDir, iosPackage)
+        if (!filePath.exists()) {
+            throw GradleException("$iosPackage not found. Please, update the swift package.")
         }
         println("$iosPackage package has the updated version")
     }
 }
 
 tasks.register<Delete>("updateSwiftPackage") {
+    group = "Multiplatform-swift-package"
+    description = "Updates the Swift package by removing outdated files and running the `createSwiftPackage` task."
     rootDir.listFiles { file ->
         val fileName = file.name
         if (fileName.startsWith("Kurrency-") && fileName.endsWith(".zip")) {

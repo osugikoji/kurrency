@@ -1,0 +1,19 @@
+name: Main CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  code-check:
+    name: Code Check
+    runs-on: ubuntu-latest
+    steps:
+      ## Step 1
+      - name: Checkout
+        uses: actions/checkout@v2
+      ## Step 2
+      - name: Run Check Swift Package Version
+        run: ./gradlew checkSwiftPackageVersion
