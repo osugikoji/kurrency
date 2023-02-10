@@ -1,3 +1,6 @@
+import com.android.build.gradle.internal.tasks.factory.dependsOn
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     id("com.android.library")
     id("com.squareup.sqldelight") version "1.5.4"
@@ -6,7 +9,7 @@ plugins {
     kotlin("plugin.serialization") version "1.7.20"
 }
 
-version = "0.0.2"
+version = properties["library.version"].toString()
 
 kotlin {
     android()
@@ -98,4 +101,33 @@ sqldelight {
     database("AppDatabase") {
         packageName = "com.kurrency.data.local.database"
     }
+}
+
+task("installGitHook", type = Copy::class) {
+    from(File(rootProject.rootDir, "pre-push"))
+    into(File(rootProject.rootDir, ".git/hooks"))
+    fileMode = 775
+}
+
+tasks.register("verifySwiftPackageVersion") {
+    doLast {
+        val libraryVersion = properties["library.version"]
+        val iosPackage = "Kurrency-$libraryVersion.zip"
+        if (File(rootProject.rootDir, iosPackage).isFile.not()) {
+            throw IllegalStateException("$iosPackage not found. Please, update swift package.")
+        }
+        println("$iosPackage package has the updated version")
+    }
+}
+
+tasks.register<Delete>("updateSwiftPackage") {
+    rootDir.listFiles { file ->
+        val fileName = file.name
+        if (fileName.startsWith("Kurrency-") && fileName.endsWith(".zip")) {
+            delete(file)
+            println("Removed $fileName file.")
+        }
+        false
+    }
+    finalizedBy("createSwiftPackage")
 }

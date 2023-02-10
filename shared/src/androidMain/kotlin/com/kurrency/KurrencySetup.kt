@@ -8,7 +8,7 @@ internal object ContextHolder {
 
     fun requiredContext(): Context {
         return application?.applicationContext
-            ?: error("Application context not initialized. Call the setApplication from KurrencySetup.Builder.")
+            ?: error("Application context not initialized. Call the setApplication from KurrencySetup.Builder")
     }
 }
 
