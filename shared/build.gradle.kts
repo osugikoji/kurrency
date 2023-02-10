@@ -6,7 +6,7 @@ plugins {
     kotlin("plugin.serialization") version "1.7.20"
 }
 
-version = "0.0.2"
+version = properties["library.version"].toString()
 
 kotlin {
     android()
@@ -98,4 +98,38 @@ sqldelight {
     database("AppDatabase") {
         packageName = "com.kurrency.data.local.database"
     }
+}
+
+task("installGitHook", type = Copy::class) {
+    from(File(rootProject.rootDir, "pre-push"))
+    into(File(rootProject.rootDir, ".git/hooks"))
+    fileMode = 775
+}
+
+tasks.register("checkSwiftPackageVersion") {
+    group = "Verification"
+    description = "Checks if the Swift package has the updated version by comparing it with the current library version."
+    doLast {
+        val libraryVersion = properties["library.version"]
+        val iosPackage = "Kurrency-$libraryVersion.zip"
+        val filePath = File(rootProject.rootDir, iosPackage)
+        if (!filePath.exists()) {
+            throw GradleException("$iosPackage not found. Please, update the swift package.")
+        }
+        println("$iosPackage package has the updated version")
+    }
+}
+
+tasks.register<Delete>("updateSwiftPackage") {
+    group = "Multiplatform-swift-package"
+    description = "Updates the Swift package by removing outdated files and running the `createSwiftPackage` task."
+    rootDir.listFiles { file ->
+        val fileName = file.name
+        if (fileName.startsWith("Kurrency-") && fileName.endsWith(".zip")) {
+            delete(file)
+            println("Removed $fileName file.")
+        }
+        false
+    }
+    finalizedBy("createSwiftPackage")
 }

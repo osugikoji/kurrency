@@ -1,0 +1,21 @@
+#!/bin/bash
+echo Running pre-push hook
+echo Verify Swift Package Version
+# Verify if swift package is updated.
+./gradlew verifySwiftPackageVersion
+
+# If the packaged is outdated, generate an updated one and push it.
+if [ $? -ne 0 ]; then
+ echo Update KMM Swift Package.
+ # Task to generate an updated swift package.
+ ./gradlew shared:updateSwiftPackage
+
+ echo Push updated Swift Package.
+ branch_name="$(git rev-parse --abbrev-ref HEAD)"
+ git add Kurrency-*.zip Package.swift Kurrency.xcframework
+ git commit -m "Update swift package"
+ git fetch
+ # Push the changes and skip the pre-push hook to avoid loop.
+ git push origin "$branch_name" --no-verify
+ exit 1
+fi
