@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
@@ -8,7 +9,7 @@ plugins {
     kotlin("plugin.serialization") version "1.7.20"
 }
 
-version = "0.0.1"
+version = properties["library.version"].toString()
 
 kotlin {
     android()
@@ -103,26 +104,30 @@ sqldelight {
 }
 
 task("installGitHook", type = Copy::class) {
-    var suffix = "macos"
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        suffix = "windows"
-    }
     from(File(rootProject.rootDir, "pre-push"))
     into(File(rootProject.rootDir, ".git/hooks"))
     fileMode = 775
-//    from(file(rootProject.rootDir.path + "/scripts/pre-commit-$suffix"))
-//    into(file(".git/hooks"))
-//    rename("pre-commit-$suffix", "pre-commit")
-//    fileMode = 775
 }
 
-tasks.register("verifyLibraryVersion") {
+tasks.register("verifySwiftPackageVersion") {
     doLast {
         val libraryVersion = properties["library.version"]
         val iosPackage = "Kurrency-$libraryVersion.zip"
         if (File(rootProject.rootDir, iosPackage).isFile.not()) {
-            throw IllegalStateException("$iosPackage not found. Please, generate new swift package.")
+            throw IllegalStateException("$iosPackage not found. Please, update swift package.")
         }
         println("$iosPackage package has the updated version")
     }
+}
+
+tasks.register<Delete>("updateSwiftPackage") {
+    rootDir.listFiles { file ->
+        val fileName = file.name
+        if (fileName.startsWith("Kurrency-") && fileName.endsWith(".zip")) {
+            delete(file)
+            println("Removed $fileName file.")
+        }
+        false
+    }
+    finalizedBy("createSwiftPackage")
 }
